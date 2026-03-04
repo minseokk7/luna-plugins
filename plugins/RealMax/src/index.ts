@@ -7,27 +7,23 @@ import { settings } from "./Settings";
 
 export { errSignal, unloads } from "./index.safe";
 
+const getFormatString = async (mediaItem: MediaItem): Promise<string> => {
+	const quality = mediaItem.bestQuality;
+	try {
+		const format = await mediaItem.updateFormat(quality.audioQuality);
+		if (format?.bitDepth && format?.sampleRate) return `${format.bitDepth}bit/${format.sampleRate / 1000}kHz`;
+	} catch {}
+	return quality.name;
+};
+
 const getMaxItem = async (mediaItem?: MediaItem) => {
 	const maxItem = await mediaItem?.max();
 	if (maxItem === undefined) return;
-	if (settings.displayInfoPopups) trace.msg.log(`Found replacement for ${mediaItem!.tidalItem.title}`);
+	if (settings.displayInfoPopups) {
+		const [fromFmt, toFmt] = await Promise.all([getFormatString(mediaItem!), getFormatString(maxItem)]);
+		trace.msg.log(`Found replacement for ${mediaItem!.tidalItem.title} (${fromFmt} -> ${toFmt})`);
+	}
 	return maxItem;
-};
-
-const playMaxItem = async (elements: redux.PlayQueueElement[], index: number) => {
-	const newElements = [...elements];
-	if (newElements[index]?.mediaItemId === undefined) return false;
-
-	const mediaItem = await MediaItem.fromId(newElements[index].mediaItemId);
-	const maxItem = await getMaxItem(mediaItem);
-	if (maxItem === undefined) return false;
-
-	newElements[index] = { ...newElements[index], mediaItemId: maxItem.id };
-	PlayState.updatePlayQueue({
-		elements: newElements,
-		currentIndex: index,
-	});
-	return true;
 };
 
 export { Settings } from "./Settings";
@@ -37,15 +33,15 @@ MediaItem.onPreload(unloads, (mediaItem) => mediaItem.max().catch(trace.err.with
 
 MediaItem.onPreMediaTransition(unloads, async (mediaItem) => {
 	const maxItem = await getMaxItem(mediaItem);
-	if (!PlayState.playing) return;
-
-	PlayState.pause();
-	try {
-		if (maxItem !== undefined) PlayState.playNext(maxItem.id);
-	} catch (err) {
-		trace.msg.err.withContext("addNext")(err);
+	if (maxItem !== undefined && PlayState.playing) {
+		PlayState.pause();
+		try {
+			PlayState.playNext(maxItem.id);
+		} catch (err) {
+			trace.msg.err.withContext("addNext")(err);
+		}
+		PlayState.play();
 	}
-	PlayState.play();
 
 	// Preload next item
 	const nextItem = await PlayState.nextMediaItem();
@@ -70,18 +66,53 @@ redux.intercept("playQueue/ADD_NOW", unloads, (payload) => {
 redux.intercept(["playQueue/MOVE_TO", "playQueue/MOVE_NEXT", "playQueue/MOVE_PREVIOUS"], unloads, (payload, action) => {
 	(async () => {
 		const { elements, currentIndex } = PlayState.playQueue;
+		let targetIndex: number;
 		switch (action) {
 			case "playQueue/MOVE_NEXT":
-				if (!(await playMaxItem(elements, currentIndex + 1))) PlayState.next();
+				targetIndex = currentIndex + 1;
 				break;
 			case "playQueue/MOVE_PREVIOUS":
-				if (!(await playMaxItem(elements, currentIndex - 1))) PlayState.previous();
+				targetIndex = currentIndex - 1;
 				break;
 			case "playQueue/MOVE_TO":
-				if (!(await playMaxItem(elements, payload ?? currentIndex))) PlayState.moveTo(payload ?? currentIndex);
+				targetIndex = payload ?? currentIndex;
+				break;
+			default:
+				return;
+		}
+
+		// Pre-swap the target track with its max version before transitioning
+		const element = elements[targetIndex];
+		if (element?.mediaItemId !== undefined) {
+			try {
+				const mediaItem = await MediaItem.fromId(element.mediaItemId);
+				const maxItem = await getMaxItem(mediaItem);
+				if (maxItem !== undefined) {
+					const newElements = [...elements];
+					newElements[targetIndex] = { ...newElements[targetIndex], mediaItemId: maxItem.id };
+					// Update queue but keep currentIndex unchanged — only swap the future track
+					PlayState.updatePlayQueue({
+						elements: newElements,
+						currentIndex,
+					});
+				}
+			} catch (err) {
+				trace.err.withContext(action)(err);
+			}
+		}
+
+		// Transition using normal PlayState methods (works with Tidal Connect)
+		switch (action) {
+			case "playQueue/MOVE_NEXT":
+				PlayState.next();
+				break;
+			case "playQueue/MOVE_PREVIOUS":
+				PlayState.previous();
+				break;
+			case "playQueue/MOVE_TO":
+				PlayState.moveTo(payload ?? currentIndex);
 				break;
 		}
-		PlayState.play();
 	})();
 	return true;
 });
