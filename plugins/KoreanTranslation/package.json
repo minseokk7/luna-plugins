@@ -1,5 +1,5 @@
 {
-  "name": "@luna/korean-translation",
+  "name": "@minseokk7/korean-translation",
   "version": "1.1.0",
   "description": "Tidal UI 한국어 번역 플러그인",
   "main": "src/index.ts",
