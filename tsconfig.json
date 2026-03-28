@@ -1,0 +1,14 @@
+{
+	"extends": "./node_modules/luna/tsconfig.json",
+	"compilerOptions": {
+		"jsx": "react",
+		"baseUrl": ".",
+		"paths": {
+			"@luna/lib": ["./node_modules/luna/plugins/lib/src/index.ts"],
+			"@luna/core": ["./node_modules/luna/render/src/index.ts"],
+			"@luna/ui": ["./node_modules/luna/plugins/ui/src/index.tsx"],
+			"@luna/dev": ["./node_modules/luna/plugins/dev/src/index.ts"]
+		}
+	},
+	"include": ["plugins/**/*"]
+}
