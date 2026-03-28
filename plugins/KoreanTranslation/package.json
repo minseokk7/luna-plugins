@@ -1,6 +1,6 @@
 {
   "name": "@luna/korean-translation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Tidal UI 한국어 번역 플러그인",
   "main": "src/index.ts",
   "license": "MIT"
