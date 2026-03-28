@@ -190,5 +190,10 @@ export const translations: Record<string, string> = {
   "Hide Uploads tab": "Uploads 탭 숨기기",
   "Hide the Uploads tab from the navigation": "좌측 네비게이션 메뉴에서 Uploads(업로드) 탭을 감춥니다.",
   "Show collection in sidebar": "사이드바에 컬렉션 전부 펼치기",
-  "Show all collection items directly in the sidebar instead of a sub menu.": "내 컬렉션 항목들을 하위 메뉴로 접어두지 않고 사이드바에 모두 펼쳐서 보여줍니다."
+  "Show all collection items directly in the sidebar instead of a sub menu.": "내 컬렉션 항목들을 하위 메뉴로 접어두지 않고 사이드바에 모두 펼쳐서 보여줍니다.",
+
+  // 스크린샷 추가 요청분
+  "Edit": "편집",
+  "Private": "비공개",
+  "Filter playlist on title, artist or album": "제목, 아티스트 또는 앨범으로 플레이리스트 필터링"
 };
