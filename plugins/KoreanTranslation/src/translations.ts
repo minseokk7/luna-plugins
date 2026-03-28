@@ -165,5 +165,30 @@ export const translations: Record<string, string> = {
   "Passthrough MQA": "MQA 패스스루",
   "About": "정보",
   "Terms and Conditions": "이용약관",
-  "Privacy Policy": "개인정보 처리방침"
+  "Privacy Policy": "개인정보 처리방침",
+
+  // 환경설정 및 세부 옵션들 (추가 요청분)
+  "Set the same volume level for all tracks.": "모든 트랙에 동일한 볼륨 레벨을 적용합니다.",
+  "Sound output": "사운드 출력",
+  "Play similar songs after the last track in your queue ends.": "대기열의 마지막 재생이 끝나면 비슷한 곡을 재생합니다.",
+  "Explicit content": "연령 제한 콘텐츠 (Explicit)",
+  "Allow or restrict explicit content labeled with the E tag. This doesn't include videos.": "E 태그가 표시된 연령 제한 콘텐츠를 허용하거나 제한합니다. (비디오 제외)",
+  "Blocked": "차단된 콘텐츠",
+  "View and edit your blocked content.": "차단한 콘텐츠의 목록을 보거나 편집합니다.",
+  
+  "Preferences": "환경설정",
+  "Startup": "시작 프로그램",
+  "Open TIDAL automatically after you log into the computer": "컴퓨터 부팅 시 TIDAL을 자동으로 실행합니다.",
+  "Close to tray": "트레이로 최소화",
+  "Close button should minimize the TIDAL window to the tray": "닫기 버튼을 누르면 프로그램을 종료하지 않고 트레이로 최소화합니다.",
+
+  "Display": "화면 표시",
+  "Audio metadata": "오디오 정보 (메타데이터)",
+  "Show additional fields (e.g. BPM) in track lists": "트랙 목록에 BPM, Key 등의 추가 오디오 정보를 표시합니다.",
+  "Alphanumeric keys": "문자형 음계 표시",
+  "Display keys in alphanumeric format": "음악의 키(Key)를 알파벳과 숫자 형태(Alphanumeric)로 표시합니다.",
+  "Hide Uploads tab": "Uploads 탭 숨기기",
+  "Hide the Uploads tab from the navigation": "좌측 네비게이션 메뉴에서 Uploads(업로드) 탭을 감춥니다.",
+  "Show collection in sidebar": "사이드바에 컬렉션 전부 펼치기",
+  "Show all collection items directly in the sidebar instead of a sub menu.": "내 컬렉션 항목들을 하위 메뉴로 접어두지 않고 사이드바에 모두 펼쳐서 보여줍니다."
 };
